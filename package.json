@@ -17,5 +17,9 @@
   },
   "scripts": {
     "start": "node index.js"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
   }
 }
