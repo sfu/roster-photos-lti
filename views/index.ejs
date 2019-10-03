@@ -4,7 +4,6 @@
     <title><%= title %></title>
     <link rel="stylesheet" href="/css/style.css" />
     <meta name="viewport" content="width=device-width" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
     <base target="_parent" />
   </head>
   <body data-courseId="<%= course.custom_canvas_course_id %>">
@@ -27,11 +26,25 @@
       information only for purposes which it was collected and purposes
       consistent with my job duties.
     </p>
-    <div id="spinner"></div>
+    <div id="spinner">
+      <div class="sk-fading-circle">
+        <div class="sk-circle1 sk-circle"></div>
+        <div class="sk-circle2 sk-circle"></div>
+        <div class="sk-circle3 sk-circle"></div>
+        <div class="sk-circle4 sk-circle"></div>
+        <div class="sk-circle5 sk-circle"></div>
+        <div class="sk-circle6 sk-circle"></div>
+        <div class="sk-circle7 sk-circle"></div>
+        <div class="sk-circle8 sk-circle"></div>
+        <div class="sk-circle9 sk-circle"></div>
+        <div class="sk-circle10 sk-circle"></div>
+        <div class="sk-circle11 sk-circle"></div>
+        <div class="sk-circle12 sk-circle"></div>
+      </div>
+      <p class="smaller">Loading Roster Photos&hellip;</p>
+    </div>
+    <div id="error"></div>
     <div id="rosterGrid"></div>
-    <script type="text/template" id="message">
-      <p class="timeoutMessage" style="top: 100px;position: absolute;width: 400px;left: 50%;transform: translate(-50%, -50%);text-align: center;">Retreiving the photos for this class is taking a little longer than usual. In the meantime, enjoy watching the colours go 'round and 'round&hellip;</p>
-    </script>
     <script>
       window.COURSE_ROSTER_PHOTOS = {
         courseId: '<%= course.custom_canvas_course_id %>',
