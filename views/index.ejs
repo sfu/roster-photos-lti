@@ -8,6 +8,7 @@
     <base target="_parent" />
   </head>
   <body data-courseId="<%= course.custom_canvas_course_id %>">
+    <h1>Roster Photos</h1>
     <p class="smaller">
       Roster photos are drawn from the SFU ID photos system.
     </p>
@@ -17,7 +18,7 @@
       <a
         href="http://www.sfu.ca/policies/gazette/information/I10-04.html"
         target="_blank"
-        class="smaller"
+        rel="noopener"
         >University Policy I10.04</a
       >, and applicable department policy, as an employee of Simon Fraser
       University, I understand that I have a legal obligation to protect
@@ -27,12 +28,15 @@
       consistent with my job duties.
     </p>
     <div id="spinner"></div>
-    <table class="rosterTable">
-      <tbody></tbody>
-    </table>
+    <div id="rosterGrid"></div>
     <script type="text/template" id="message">
       <p class="timeoutMessage" style="top: 100px;position: absolute;width: 400px;left: 50%;transform: translate(-50%, -50%);text-align: center;">Retreiving the photos for this class is taking a little longer than usual. In the meantime, enjoy watching the colours go 'round and 'round&hellip;</p>
     </script>
-    <!-- <script src="/rosterPhotos/javascripts/rosterPhotos.js"></script> -->
+    <script>
+      window.COURSE_ROSTER_PHOTOS = {
+        courseId: '<%= course.custom_canvas_course_id %>',
+      };
+    </script>
+    <script src="/js/rosterPhotos.js"></script>
   </body>
 </html>

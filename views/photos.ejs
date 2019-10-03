@@ -1,0 +1,14 @@
+<% photoData.forEach(photo => { %>
+<div class="rosterItem">
+  <img
+    class="rosterImage"
+    src="data:image/jpeg;base64,<%= photo.PictureIdentification %>"
+  />
+  <a href="<%= photo.canvasProfileUrl %>">
+    <p class="studentInfo">
+      <%= photo.LastName %>, <%= photo.FirstName %><br />
+      <%= photo.SfuId %>
+    </p>
+  </a>
+</div>
+<% }) %>

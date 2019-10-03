@@ -1,9 +1,6 @@
 FROM node:10.16.3-alpine
 
 RUN apk --no-cache add --virtual \
-  builds-deps \
-  build-base \
-  python \
   git \
   inotify-tools
 

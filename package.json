@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "express-session": "^1.16.2",
     "ims-lti": "^3.0.2",
-    "node-sfu-photos-client": "git+https://github.com/sfu/node-sfu-photos-client.git",
+    "node-sfu-photos-client": "https://github.com/sfu/node-sfu-photos-client.git#update",
     "redis": "^2.8.0"
   },
   "scripts": {

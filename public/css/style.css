@@ -1,0 +1,55 @@
+html {
+  font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #2D3B45;
+}
+
+h1 {
+  color: rgb(102, 102, 102);
+  display: block;
+  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 40px;
+  font-weight: 200;
+  height: 60px;
+  line-height: 60px;
+  margin-block-end: 15px;
+  margin-block-start: 15px;
+  margin-bottom: 15px;
+  margin-inline-end: 0px;
+  margin-inline-start: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 15px;
+  overflow-wrap: break-word;
+  text-rendering: optimizelegibility;
+  text-size-adjust: 100%;
+  width: 657px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.smaller {
+  font-size: .8em;
+}
+
+#rosterGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 2.5em;
+}
+
+.rosterItem {
+  margin: 0 2em 1em 0;
+}
+
+.rosterImage {
+  width: 200px;
+  height: 255px;
+  display: block;
+  margin: 0 auto;
+}
+
+.studentInfo {
+  font-size: .8em;
+  text-align: center;
+}
