@@ -38,7 +38,7 @@ const ltiProvider = new LTI.Provider('rosterphotos', LTI_SECRET, nonceStore);
 
 const app = express();
 app.set('trust proxy', 1);
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
