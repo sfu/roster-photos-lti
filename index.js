@@ -56,6 +56,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/isup', (req, res) => {
+  res.set('Content-Type', 'text/plain');
   res.status(200).send('ok');
 });
 
