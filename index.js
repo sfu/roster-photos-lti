@@ -9,6 +9,7 @@ const redis = require('redis');
 const RedisStore = require('connect-redis')(session);
 const axios = require('axios').default;
 const LTI = require('ims-lti');
+const Sentry = require('@sentry/node');
 const PhotoClient = require('node-sfu-photos-client');
 const RedisNonceStore = require('ims-lti/lib/redis-nonce-store');
 const hasLaunchForCourse = require('./lib/hasLaunchForCourse');
@@ -30,13 +31,23 @@ const {
   PHOTO_CLIENT_CACHE_REDIS_PORT = 6379,
   PHOTO_CLIENT_MAX_PER_REQUEST = 10,
   PHOTO_CLIENT_MAX_WIDTH = 200,
+  SENTRY_DSN,
 } = process.env;
 
 const redisClient = redis.createClient({ url: REDIS_URL });
 const nonceStore = new RedisNonceStore('rosterphotos', redisClient);
 const ltiProvider = new LTI.Provider('rosterphotos', LTI_SECRET, nonceStore);
 
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+  });
+}
+
 const app = express();
+if (SENTRY_DSN) {
+  app.use(Sentry.Handlers.requestHandler());
+}
 app.set('trust proxy', 1);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
@@ -64,7 +75,12 @@ app.post('/launch', (req, res) => {
   ltiProvider.valid_request(req, function(err, isValid) {
     if (err) {
       console.log(err, req.body);
-      res.status(500).send(err);
+      const errorId = Sentry.captureException(err);
+      res
+        .status(500)
+        .send(
+          `<p>An error occurred while launching Roster Photos. This error has been reported to the SFU Canvas technical team. Error reference: ${errorId}</p>`
+        );
     } else if (!isValid) {
       // TODO redirect to a proper unauthorized page
       res.status(403);
@@ -108,7 +124,11 @@ app.get('/:course', hasLaunchForCourse, async (req, res) => {
 
     if (!roster || !roster.length) {
       // render no students view
-      return res.status(200).send(roster.data);
+      return res
+        .status(200)
+        .send(
+          '<p>There do not appear to be any students enrolled in this course.</p>'
+        );
     }
 
     const sfuIds = roster.map(u => u.sis_user_id);
@@ -152,82 +172,19 @@ app.get('/:course', hasLaunchForCourse, async (req, res) => {
 
     res.render('photos', { layout: false, photoData: normalizedPhotos });
   } catch (error) {
+    const errorId = Sentry.captureException(error);
     console.log(error);
-    res.status(500).send({ error: error.message });
+    res
+      .status(500)
+      .send(
+        `<p>An error occurred while launching Roster Photos. This error has been reported to the SFU Canvas technical team. Error reference: ${errorId}</p>`
+      );
   }
-
-  // request(
-  //   {
-  //     uri: apiUrl,
-  //     qs: queryParams,
-  //     method: 'GET',
-  //     json: true,
-  //     headers: {
-  //       Authorization: 'Bearer ' + config.canvasApiKey,
-  //     },
-  //   },
-  //   function(err, response, roster) {
-  //     if (err) {
-  //       console.log(err);
-  //       res.render('500', { title: '500' });
-  //     }
-  //     if (!roster || !roster.length) {
-  //       res.render(path.join(__dirname, 'views/no_students'), {
-  //         layout: false,
-  //       });
-  //       return false;
-  //     }
-  //     let sfuIds = roster.map(function(user) {
-  //       return user.sis_user_id;
-  //     });
-  //     photoClient
-  //       .getPhoto(sfuIds)
-  //       .then(function(photos) {
-  //         // ids that don't have photos will be undefined in the photos array
-  //         // replace with placeholder data
-
-  //         if (!photos || !photos.length) {
-  //           res.render('500', { title: '500' });
-  //           return false;
-  //         }
-
-  //         let normalizedPhotos = photos.map(function(photo, index) {
-  //           if (!photo) {
-  //             let name = roster[index].sortable_name.split(', ');
-  //             photo = {
-  //               LastName: name[0],
-  //               FirstName: name[1],
-  //               SfuId: roster[index].sis_user_id,
-  //               PictureIdentification: noPhotoImage,
-  //             };
-  //           }
-  //           photo.canvasProfileUrl =
-  //             parsedUrl.protocol +
-  //             '//' +
-  //             parsedUrl.host +
-  //             '/courses/' +
-  //             courseId +
-  //             '/users/' +
-  //             roster[index].id;
-  //           return photo;
-  //         });
-
-  //         let rows = [],
-  //           maxPerRow = 4;
-  //         for (let i = 0, j = normalizedPhotos.length; i < j; i += maxPerRow) {
-  //           rows.push(normalizedPhotos.slice(i, i + maxPerRow));
-  //         }
-  //         res.render(path.join(__dirname, 'views/row'), {
-  //           rows: rows,
-  //           layout: false,
-  //         });
-  //       })
-  //       .fail(function(err) {
-  //         res.render('500', { title: '500' });
-  //       });
-  //   }
-  // );
 });
+
+if (SENTRY_DSN) {
+  app.use(Sentry.Handlers.errorHandler());
+}
 
 app.listen(HTTP_PORT);
 console.log(`Listening on ${HTTP_PORT}`);
