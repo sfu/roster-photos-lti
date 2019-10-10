@@ -32,6 +32,7 @@ const {
   PHOTO_CLIENT_MAX_PER_REQUEST = 10,
   PHOTO_CLIENT_MAX_WIDTH = 200,
   SENTRY_DSN,
+  NODE_ENV,
 } = process.env;
 
 const redisClient = redis.createClient({ url: REDIS_URL });
@@ -108,14 +109,19 @@ app.get('/:course', hasLaunchForCourse, async (req, res) => {
   };
 
   try {
-    const canvasApi = axios.create({
+    const axiosOpts = {
       headers: {
         Authorization: `Bearer ${CANVAS_API_KEY}`,
       },
-      httpsAgent: new https.Agent({
+    };
+
+    if (NODE_ENV !== 'production') {
+      axiosOpts.httpsAgent = new https.Agent({
         rejectUnauthorized: false,
-      }),
-    });
+      });
+    }
+
+    const canvasApi = axios.create(axiosOpts);
     const response = await canvasApi.get(apiUrl, {
       params,
     });
@@ -177,7 +183,7 @@ app.get('/:course', hasLaunchForCourse, async (req, res) => {
     res
       .status(500)
       .send(
-        `<p>An error occurred while launching Roster Photos. This error has been reported to the SFU Canvas technical team. Error reference: ${errorId}</p>`
+        `<p>An error occurred while retreiving the roster photos for this course. This error has been reported to the SFU Canvas technical team.</p><p>Error ID: ${errorId}</p>`
       );
   }
 });
